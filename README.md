@@ -56,5 +56,5 @@ El script genera:
 El script usa `tools=[{"type": "apply_patch"}]` y aplica operaciones `create_file`,
 `update_file` y `delete_file` con `apply_diff`.
 
-Por seguridad minimalista, solo permite aplicar cambios sobre los archivos listados en
-`user_files` del spec.
+Por seguridad minimalista, solo permite aplicar cambios dentro del directorio del
+proyecto (bloquea rutas fuera del workspace).

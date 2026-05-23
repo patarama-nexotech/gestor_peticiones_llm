@@ -1,11 +1,9 @@
 {
-  "developer_file": "inputs/tu_developer_message.txt",
+  "developer_file": "developer_message.md",
   "user_files": [
-    "inputs/tu_archivo_contexto_1.md",
-    "inputs/tu_archivo_contexto_2.md"
   ],
-  "prompt_file": "inputs/tu_pregunta.txt",
-  "output_file": "outputs/respuesta.txt",
+  "prompt_file": "pregunta.md",
+  "output_file": "respuesta.md",
   "model": "gpt-5.4-mini",
   "effort": "low"
 }

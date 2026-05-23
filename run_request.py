@@ -47,16 +47,18 @@ def get_value(obj: object, key: str, default: object = None) -> object:
     return getattr(obj, key, default)
 
 
-def resolve_allowed_path(path_value: str, base_dir: Path, allowed_paths: set[Path]) -> Path:
+def resolve_allowed_path(path_value: str, base_dir: Path) -> Path:
     candidate = Path(path_value)
     target = candidate if candidate.is_absolute() else (base_dir / candidate)
     target = target.resolve()
-    if target not in allowed_paths:
-        raise RuntimeError(f"Path not allowed: {target}")
+    try:
+        target.relative_to(base_dir)
+    except ValueError:
+        raise RuntimeError(f"Operation outside workspace: {target}") from None
     return target
 
 
-def apply_patch_calls(response: object, base_dir: Path, allowed_paths: set[Path]) -> list[dict[str, str]]:
+def apply_patch_calls(response: object, base_dir: Path) -> list[dict[str, str]]:
     outputs: list[dict[str, str]] = []
     response_output = get_value(response, "output", [])
 
@@ -71,7 +73,7 @@ def apply_patch_calls(response: object, base_dir: Path, allowed_paths: set[Path]
         op_diff = str(get_value(operation, "diff", "") or "")
 
         try:
-            target = resolve_allowed_path(op_path, base_dir, allowed_paths)
+            target = resolve_allowed_path(op_path, base_dir)
 
             if op_type == "create_file":
                 content = apply_diff("", op_diff, mode="create")
@@ -126,17 +128,27 @@ def run(spec_path: Path) -> None:
 
     model = spec.get("model", "gpt-5.4-mini")
     effort = spec.get("effort", "low")
+    tools = [
+        {
+            "type": "web_search",
+            "user_location": {"type": "approximate", "country": "PE"},
+            "search_context_size": "medium",
+        },
+        {"type": "apply_patch"},
+    ]
 
     developer_content = developer_path.read_text(encoding="utf-8")
     files_user_content = build_files_user_message(user_file_paths)
     prompt_content = prompt_path.read_text(encoding="utf-8")
-    allowed_paths = set(user_file_paths)
 
     client = OpenAI(api_key=api_key)
     response = client.responses.create(
         model=model,
-        reasoning={"effort": effort},
-        tools=[{"type": "apply_patch"}],
+        text={"format": {"type": "text"}, "verbosity": "medium"},
+        reasoning={"effort": effort, "summary": "auto"},
+        tools=tools,
+        store=True,
+        include=["reasoning.encrypted_content", "web_search_call.action.sources"],
         input=[
             {"role": "developer", "content": developer_content},
             {"role": "user", "content": files_user_content},
@@ -145,13 +157,16 @@ def run(spec_path: Path) -> None:
     )
 
     while True:
-        patch_results = apply_patch_calls(response, base_dir, allowed_paths)
+        patch_results = apply_patch_calls(response, base_dir)
         if not patch_results:
             break
         response = client.responses.create(
             model=model,
-            reasoning={"effort": effort},
-            tools=[{"type": "apply_patch"}],
+            text={"format": {"type": "text"}, "verbosity": "medium"},
+            reasoning={"effort": effort, "summary": "auto"},
+            tools=tools,
+            store=True,
+            include=["reasoning.encrypted_content", "web_search_call.action.sources"],
             previous_response_id=getattr(response, "id"),
             input=patch_results,
         )
