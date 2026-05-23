@@ -14,6 +14,8 @@ Script para ejecutar una peticion a Responses API leyendo mensajes desde archivo
 - `run_request.py`: script principal
 - `request_spec.example.json`: ejemplo de archivo de especificacion
 
+No se incluyen archivos de `inputs/` por defecto. Cada usuario crea los suyos.
+
 ## Formato de especificacion
 
 La especificacion (JSON) debe contener:
@@ -39,6 +41,7 @@ El script construye el mensaje unificado de archivos asi:
 ## Ejecucion
 
 Primero crea tu archivo `.env` en la raiz del proyecto. Puedes copiar `.env.example`.
+Tambien crea los archivos referenciados por `request_spec.example.json`.
 
 ```bash
 python3 run_request.py --spec request_spec.example.json

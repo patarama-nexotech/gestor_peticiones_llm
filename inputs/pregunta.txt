@@ -1,1 +1,0 @@
-Con base en los archivos enviados, resume los puntos clave y propone los siguientes 3 pasos. Además para demostrar que apply patch tool funciona inserta algo a la mitad de archivo_contexto_2.md
