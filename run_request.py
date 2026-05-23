@@ -136,6 +136,9 @@ def run(spec_path: Path) -> None:
         },
         {"type": "apply_patch"},
     ]
+    vector_store_ids = spec.get("vector_store_ids", [])
+    if vector_store_ids:
+        tools.append({"type": "file_search", "vector_store_ids": vector_store_ids})
 
     developer_content = developer_path.read_text(encoding="utf-8")
     files_user_content = build_files_user_message(user_file_paths)
