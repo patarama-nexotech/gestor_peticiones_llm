@@ -9,6 +9,32 @@ Script para ejecutar una peticion a Responses API leyendo mensajes desde archivo
 - Archivo `.env` con `OPENAI_API_KEY`
 - Dependencia `openai-agents` para `apply_diff` (incluida en `requirements.txt`)
 
+## Entorno virtual
+
+Crear el entorno virtual:
+
+```bash
+python3 -m venv .venv
+```
+
+Activarlo en Linux/macOS:
+
+```bash
+source .venv/bin/activate
+```
+
+Activarlo en Windows (PowerShell):
+
+```powershell
+.venv\Scripts\Activate.ps1
+```
+
+Instalar dependencias dentro del entorno virtual:
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Archivos
 
 - `run_request.py`: script principal
