@@ -1,0 +1,11 @@
+{
+  "developer_file": "inputs/developer_message.txt",
+  "user_files": [
+    "inputs/archivo_contexto_1.md",
+    "inputs/archivo_contexto_2.md"
+  ],
+  "prompt_file": "inputs/pregunta.txt",
+  "output_file": "outputs/respuesta.txt",
+  "model": "gpt-5.4-mini",
+  "effort": "low"
+}
